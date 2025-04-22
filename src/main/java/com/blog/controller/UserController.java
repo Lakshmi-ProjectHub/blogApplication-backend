@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.blog.entities.User;
 import com.blog.service.UserService;
 
+import jakarta.servlet.http.HttpSession;
+
 @RestController
 @RequestMapping("/api/user")
 
@@ -54,10 +56,11 @@ public class UserController {
     // User Authentication (Sign In)
     @PostMapping("/signin")
     @CrossOrigin(origins = "http://localhost:4200")
-    public ResponseEntity<Object> signIn(@RequestBody User loginDetails) {
+    public ResponseEntity<Object> signIn(@RequestBody User loginDetails,HttpSession session) {
         User user = userService.authenticateUser(loginDetails.getEmail(), loginDetails.getPassword());
         if (user != null) {
-            return new ResponseEntity<>(new ResponseMessage("User logged in successfully", 200), HttpStatus.OK);
+        	session.setAttribute("userid", user.getId());
+            return new ResponseEntity<>(new ResponseMessage("User logged in successfully"+session.getAttribute("userid"), 200), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(new ResponseMessage("Invalid credentials", 401), HttpStatus.UNAUTHORIZED);
         }

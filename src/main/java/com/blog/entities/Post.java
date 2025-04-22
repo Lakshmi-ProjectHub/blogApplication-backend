@@ -3,6 +3,7 @@ package com.blog.entities;
 import jakarta.persistence.*;
 import java.util.*;
 import lombok.Data;
+import com.blog.entities.User;
 
 @Entity
 @Data
@@ -17,7 +18,9 @@ public class Post {
     @Column(length=5000)
     private String content;
 
-    private String postedBy;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable=false,referencedColumnName = "id")
+    private User user;
     
     private String img;
 
@@ -53,12 +56,12 @@ public void setContent(String content) {
     this.content = content;
 }
 
-public String getPostedBy() {
-    return postedBy;
+public User getUser() {
+    return user;
 }
 
-public void setPostedBy(String postedBy) {
-    this.postedBy = postedBy;
+public void setUser(User user) {
+    this.user = user;
 }
 
 public String getImg() {
