@@ -14,6 +14,7 @@ import com.blog.entities.User;
 import com.blog.service.UserService;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/user")
@@ -25,7 +26,7 @@ public class UserController {
 
     @PostMapping("/signup")
     @CrossOrigin(origins = "http://localhost:4200") // Allow CORS for this controller
-    public ResponseEntity<Object> signUp(@RequestBody User user) {
+    public ResponseEntity<Object> signUp(@RequestBody  @Valid User user) {
         boolean isUserCreated = userService.registerUser(user);
         if (isUserCreated) {
             return new ResponseEntity<>(new ResponseMessage("User registered successfully", 201), HttpStatus.CREATED);
@@ -34,29 +35,29 @@ public class UserController {
         }
     }
 
-    class ResponseMessage {
-        private String message;
-        private int status;
-
-        public ResponseMessage(String message, int status) {
-            this.message = message;
-            this.status = status;
-        }
-
-        public String getMessage() {
-            return message;
-        }
-
-        public int getStatus() {
-            return status;
-        }
-    }
+//    class ResponseMessage {
+//        private String message;
+//        private int status;
+//
+//        public ResponseMessage(String message, int status) {
+//            this.message = message;
+//            this.status = status;
+//        }
+//
+//        public String getMessage() {
+//            return message;
+//        }
+//
+//        public int getStatus() {
+//            return status;
+//        }
+//    }
 
 
     // User Authentication (Sign In)
     @PostMapping("/signin")
     @CrossOrigin(origins = "http://localhost:4200")
-    public ResponseEntity<Object> signIn(@RequestBody User loginDetails,HttpSession session) {
+    public ResponseEntity<Object> signIn(@RequestBody @Valid User loginDetails,HttpSession session) {
         User user = userService.authenticateUser(loginDetails.getEmail(), loginDetails.getPassword());
         if (user != null) {
         	session.setAttribute("userid", user.getId());
@@ -66,11 +67,29 @@ public class UserController {
         }
     }
 
-    public static class ResponseMessagee {
+//    public static class ResponseMessagee {
+//        private String message;
+//        private int status;
+//
+//        public ResponseMessagee(String message, int status) {
+//            this.message = message;
+//            this.status = status;
+//        }
+//
+//        public String getMessage() {
+//            return message;
+//        }
+//
+//        public int getStatus() {
+//            return status;
+//        }
+//    }
+ // Put this outside any method in UserController
+    public static class ResponseMessage {
         private String message;
         private int status;
 
-        public ResponseMessagee(String message, int status) {
+        public ResponseMessage(String message, int status) {
             this.message = message;
             this.status = status;
         }

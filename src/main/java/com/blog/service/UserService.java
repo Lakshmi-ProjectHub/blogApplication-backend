@@ -35,6 +35,9 @@ public class UserService {
     public User authenticateUser(String email, String rawPassword) {
         User user = userRepository.findByEmail(email);
         if (user != null && passwordEncoder.matches(rawPassword, user.getPassword())) {
+        	System.out.println("User found: " + user.getEmail());
+            System.out.println("Raw Password: " + rawPassword);
+            System.out.println("Encoded Password in DB: " + user.getPassword());
             return user; // Return user object if authentication is successful
         }
         return null; // Return null if authentication fails

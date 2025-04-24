@@ -5,22 +5,29 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 @Entity
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "Name")
+  
     private String name;
-
+    
     @Column(name = "Email")
+    @NotNull
+    @Email(message = "Email should be valid")
     private String email;
 
     @Column(name = "Password")
+    @NotNull
+    @Size(min = 8, message = "Password must be at least 8 characters")
     private String password;
 
     // Getters and Setters
