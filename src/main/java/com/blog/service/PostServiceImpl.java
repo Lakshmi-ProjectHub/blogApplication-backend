@@ -63,4 +63,8 @@ public Post savePost(Post post) {
     	throw new EntityNotFoundException("Post not found with id: " + postId);
     }
     }
+    public List<Post> searchByName(String name)
+    {
+    	return postRepository.findAllByNameContaining(name);
+    }
 }

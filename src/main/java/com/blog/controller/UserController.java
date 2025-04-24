@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -100,6 +101,18 @@ public class UserController {
 
         public int getStatus() {
             return status;
+        }
+    }
+ // In your UserController
+    @GetMapping("/session")
+    public ResponseEntity<?> getSessionUser(HttpSession session) {
+        Object userIdObj = session.getAttribute("userid");
+        if (userIdObj != null) {
+            Long userId = (Long) userIdObj;
+            User user = userService.getUserById(userId); // Implement this method in your service
+            return ResponseEntity.ok(user);
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No user in session");
         }
     }
 

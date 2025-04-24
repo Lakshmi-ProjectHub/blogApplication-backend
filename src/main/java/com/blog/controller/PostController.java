@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -35,17 +36,13 @@ public class PostController {
 
     @PostMapping
     public ResponseEntity<?> createPost(@RequestBody Post post,HttpSession session){
-    	//if (session == null) {
-    	    // Handle unauthenticated user — maybe redirect or return an error
-    	   // return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Please login first.");
-    	//}
-    	//System.out.println("Session userId: " + session.getAttribute("userid"));
-    	//Long userid=(long) session.getAttribute("userid");
-    	
+    	    Long userid = (long) session.getAttribute("userid");
+
+    	    if (userid == null) {
+    	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Please log in");
+    	    }
     	 
         try {
-        	//User user=userRepository.findById(userid).orElse(null);
-        	//post.setUser(user);
             Post createdPost = postService.savePost(post);
             return ResponseEntity.status(HttpStatus.CREATED).body(createdPost);
         } catch (Exception e){
@@ -83,4 +80,25 @@ public class PostController {
     	return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
     }
+    
+    @GetMapping("/search/{name}")
+    public ResponseEntity<?> searchByName(@PathVariable String name) {
+        try {
+        	 return ResponseEntity.status(HttpStatus.OK).body( postService.searchByName(name));
+        } catch (EntityNotFoundException e) {
+        	return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+           
+        }
+    }
+//    @GetMapping("/create-post")
+//    @ResponseBody
+//    public String showCreatePost(HttpSession session) {
+//        Object userId = session.getAttribute("userId");
+//
+//        return "<script>" +
+//                "alert('User ID from session: " + userId + "');" +
+//               "</script>" +
+//               "<h1>Create Post Page</h1>" +
+//               "<p>If you see this, session is being read by backend.</p>";
+//    }
 }
