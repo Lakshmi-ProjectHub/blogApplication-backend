@@ -36,26 +36,7 @@ public class UserController {
         }
     }
 
-//    class ResponseMessage {
-//        private String message;
-//        private int status;
-//
-//        public ResponseMessage(String message, int status) {
-//            this.message = message;
-//            this.status = status;
-//        }
-//
-//        public String getMessage() {
-//            return message;
-//        }
-//
-//        public int getStatus() {
-//            return status;
-//        }
-//    }
 
-
-    // User Authentication (Sign In)
     @PostMapping("/signin")
     @CrossOrigin(origins = "http://localhost:4200")
     public ResponseEntity<Object> signIn(@RequestBody @Valid User loginDetails,HttpSession session) {
@@ -68,24 +49,6 @@ public class UserController {
         }
     }
 
-//    public static class ResponseMessagee {
-//        private String message;
-//        private int status;
-//
-//        public ResponseMessagee(String message, int status) {
-//            this.message = message;
-//            this.status = status;
-//        }
-//
-//        public String getMessage() {
-//            return message;
-//        }
-//
-//        public int getStatus() {
-//            return status;
-//        }
-//    }
- // Put this outside any method in UserController
     public static class ResponseMessage {
         private String message;
         private int status;
@@ -115,6 +78,14 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No user in session");
         }
     }
+    
+    @PostMapping("/logout")
+    @CrossOrigin(origins = "http://localhost:4200")
+    public ResponseEntity<Object> logout(HttpSession session) {
+        session.invalidate(); // Invalidate the session and clear all session attributes
+        return new ResponseEntity<>(new ResponseMessage("User logged out successfully", 200), HttpStatus.OK);
+    }
+    
 
 
 }

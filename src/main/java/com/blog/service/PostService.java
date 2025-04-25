@@ -11,5 +11,11 @@ public interface PostService {
    
 	List<Post> searchByName(String name);
 	
+	List<Post> getPostByUserId(Long userId) ;
+	void deletePostById(Long id);
+	Post updatePost(Long id, Post post);
+	 
+    
+	
 	
 }

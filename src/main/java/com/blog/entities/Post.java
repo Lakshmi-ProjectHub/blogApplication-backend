@@ -31,6 +31,9 @@ public class Post {
     private int viewCount;
 
     private List<String> tags;
+    
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments;
 
 public Long getId() {
     return id;

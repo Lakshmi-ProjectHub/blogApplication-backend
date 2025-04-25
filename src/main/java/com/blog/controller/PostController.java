@@ -9,11 +9,15 @@ import com.blog.controller.UserController.ResponseMessage;
 import com.blog.entities.Post;
 import com.blog.entities.User;
 import com.blog.repository.UserRepository;
+import com.blog.service.CommentService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+
+import java.util.Collections;
 import java.util.List;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -21,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -33,16 +38,25 @@ public class PostController {
     
     @Autowired
     private UserRepository userRepository;
+    
+    @Autowired
+    private CommentService commentService;
+    
+    
 
     @PostMapping
     public ResponseEntity<?> createPost(@RequestBody Post post,HttpSession session){
-    	    Long userid = (long) session.getAttribute("userid");
-
-    	    if (userid == null) {
-    	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Please log in");
-    	    }
+    	 
     	 
         try {
+        	Long userId = post.getUser().getId();  // Assuming Post entity has a 'user' object with 'getId()'
+            
+            if (userId == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User ID is missing in the request");
+            }
+
+            // Optionally, set the user ID in the post if needed (for persistence)
+            post.setId(userId); 
             Post createdPost = postService.savePost(post);
             return ResponseEntity.status(HttpStatus.CREATED).body(createdPost);
         } catch (Exception e){
@@ -89,6 +103,46 @@ public class PostController {
         	return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
            
         }
+    }
+    
+//    @GetMapping("/user/{userId}")
+//    public ResponseEntity<?> getPostByUserId(@PathVariable Long userId) {
+//        try {
+//            Post post = postService.getPostById(userId);
+//            return ResponseEntity.ok(post);
+//        } catch (EntityNotFoundException e) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+//        }
+//    }
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<?> getPostByUserId(@PathVariable Long userId) {
+        try {
+            List<Post> posts = postService.getPostByUserId(userId);
+            
+            // If no posts are found, return an empty list
+            if (posts.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).body(Collections.emptyList());
+            }
+            
+            // Return posts as a List
+            return ResponseEntity.ok(posts);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+    
+    @CrossOrigin(origins = "http://localhost:4200")
+    @PutMapping("/{id}")
+    public ResponseEntity<Post> updatePost(@PathVariable Long id, @RequestBody Post post) {
+        Post updatedPost = postService.updatePost(id, post);
+        return ResponseEntity.ok(updatedPost);
+    }
+    
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deletePost(@PathVariable Long id) {
+    	commentService.deleteCommentsByPostId(id);
+        postService.deletePostById(id);
+        return ResponseEntity.ok().build();
     }
 //    @GetMapping("/create-post")
 //    @ResponseBody

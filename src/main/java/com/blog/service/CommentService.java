@@ -10,4 +10,7 @@ public interface CommentService {
 
 	 
 	 List<Comment> getCommentsByPostId(Long postId);
+	 
+	 void deleteCommentsByPostId(Long postId);
+	 
 }

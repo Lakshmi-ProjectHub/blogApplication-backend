@@ -41,12 +41,12 @@ public class Comment {
 		this.createdAt = createdAt;
 	}
 
-	public String getPostedBy() {
-		return postedBy;
+	public User getUser() {
+		return user;
 	}
 
-	public void setPostedBy(String postedBy) {
-		this.postedBy = postedBy;
+	public void setUser(User user) {
+		this.user = user;
 	}
 
 	public Post getPost() {
@@ -61,12 +61,14 @@ public class Comment {
 	
 	private Date  createdAt;
 	
-	private String postedBy;
 	
 	@ManyToOne
-	@JoinColumn(name ="post_id",nullable=false)
+	@JoinColumn(name ="post_id",nullable=false,referencedColumnName = "id")
 	private Post post;
 	
+	@ManyToOne
+    @JoinColumn(name = "postedBy", nullable=false,referencedColumnName = "id")
+    private User user;
 	
 	
 

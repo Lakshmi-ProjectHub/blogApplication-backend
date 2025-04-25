@@ -1,6 +1,7 @@
 package com.blog.service;
 
 import com.blog.entities.Post;
+
 import com.blog.entities.User;
 import com.blog.repository.PostRepository;
 import com.blog.repository.UserRepository;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 
 @Service
 public class PostServiceImpl implements PostService {
@@ -67,4 +69,36 @@ public Post savePost(Post post) {
     {
     	return postRepository.findAllByNameContaining(name);
     }
+    public List<Post> getPostByUserId(Long userId) {
+        List<Post> posts = postRepository.findByUserId(userId);
+
+        if (posts.isEmpty()) {
+            throw new EntityNotFoundException("No posts found for this user");
+        }
+
+        return posts;
+    }
+
+
+	@Override
+	public void deletePostById(Long id) {
+	    postRepository.deleteById(id);
+	}
+
+    @Transactional
+	@Override
+	public Post updatePost(Long id, Post post) {
+	    Post existingPost = postRepository.findById(id)
+	        .orElseThrow(() -> new RuntimeException("Post not found"));
+	    
+	    System.out.println("Updated Post: " + existingPost);
+
+	    existingPost.setName(post.getName());
+	    existingPost.setImg(post.getImg());
+	    existingPost.setContent(post.getContent());
+	    
+	    System.out.println("Updated Post: " + existingPost);
+
+	    return postRepository.save(existingPost);
+	}
 }
