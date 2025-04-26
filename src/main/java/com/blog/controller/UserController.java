@@ -57,6 +57,7 @@ public class UserController {
             this.message = message;
             this.status = status;
         }
+        
 
         public String getMessage() {
             return message;
