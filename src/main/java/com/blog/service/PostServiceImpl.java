@@ -1,8 +1,9 @@
 package com.blog.service;
 
 import com.blog.entities.Post;
-
+//import com.blog.entities.PostInteraction;
 import com.blog.entities.User;
+//import com.blog.repository.PostInteractionRepository;
 import com.blog.repository.PostRepository;
 import com.blog.repository.UserRepository;
 
@@ -34,30 +35,87 @@ public Post savePost(Post post) {
     post.setLikeCount(0);
     post.setViewCount(0);
     post.setDate(new Date());
-
+    post.setId(null);
+    
     return postRepository.save(post);
 }
     
-
     public List<Post> getAllPosts() {
-        return postRepository.findAll();
+        return postRepository.findAllByOrderByDateDesc();
     }
 
+//    public Post getPostById(Long postId, Long userId) {
+//        Post post = postRepository.findById(postId)
+//            .orElseThrow(() -> new EntityNotFoundException("Post not found"));
+//        User user = userRepository.findById(userId)
+//            .orElseThrow(() -> new EntityNotFoundException("User not found"));
+//
+//        Optional<PostInteraction> interactionOpt = PostInteractionRepository.findByUserAndPost(user, post);
+//
+//        if (interactionOpt.isEmpty() || !interactionOpt.get().isViewed()) {
+//            PostInteraction interaction = interactionOpt.orElse(new PostInteraction());
+//            interaction.setUser(user);
+//            interaction.setPost(post);
+//            interaction.setViewed(true);
+//            PostInteractionRepository.save(interaction);
+//
+//            post.setViewCount(post.getViewCount() + 1);
+//            postRepository.save(post);
+//        }
+//
+//        return post;
+//    }
+
+    
     public Post getPostById(Long postId) {
-       Optional<Post> optionalPost = postRepository.findById(postId);
-        if (optionalPost.isPresent()) {
-            Post post = optionalPost.get();
-            post.setViewCount(post.getViewCount() + 1);
-            return postRepository.save(post);
-        } else {
-            throw new EntityNotFoundException("Post not found");
-        }
+        Optional<Post> optionalPost = postRepository.findById(postId);
+         if (optionalPost.isPresent()) {
+             Post post = optionalPost.get();
+             return postRepository.save(post);
+         } else {
+             throw new EntityNotFoundException("Post not found");
+         }
+     }
+    
+    public void viewPost(Long postId) {
+    	Optional<Post> optionalPost=postRepository.findById(postId);
+    if(optionalPost.isPresent())	{
+    	Post post = optionalPost.get();
+    	post.setViewCount(post.getViewCount() + 1);
+    	postRepository.save(post);
     }
+    else {
+    	throw new EntityNotFoundException("Post not found with id: " + postId);
+    }
+    }
+    
+//    public void likePost(Long postId, Long userId) {
+//        Post post = postRepository.findById(postId)
+//            .orElseThrow(() -> new EntityNotFoundException("Post not found"));
+//        User user = userRepository.findById(userId)
+//            .orElseThrow(() -> new EntityNotFoundException("User not found"));
+//
+//        Optional<PostInteraction> interactionOpt = interactionRepository.findByUserAndPost(user, post);
+//
+//        PostInteraction interaction = interactionOpt.orElse(new PostInteraction());
+//        interaction.setUser(user);
+//        interaction.setPost(post);
+//
+//        if (interactionOpt.isPresent() && interaction.isLiked()) {
+//            interaction.setLiked(false);
+//            post.setLikeCount(post.getLikeCount() - 1);
+//        } else {
+//            interaction.setLiked(true);
+//            post.setLikeCount(post.getLikeCount() + 1);
+//        }
+//
+//        interactionRepository.save(interaction);
+//        postRepository.save(post);
+//    }
     public void likePost(Long postId) {
     	Optional<Post> optionalPost=postRepository.findById(postId);
     if(optionalPost.isPresent())	{
     	Post post = optionalPost.get();
-    	
     	post.setLikeCount(post.getLikeCount()+1);
     	postRepository.save(post);
     }
@@ -65,6 +123,7 @@ public Post savePost(Post post) {
     	throw new EntityNotFoundException("Post not found with id: " + postId);
     }
     }
+    
     public List<Post> searchByName(String name)
     {
     	return postRepository.findAllByNameContaining(name);
@@ -101,4 +160,5 @@ public Post savePost(Post post) {
 
 	    return postRepository.save(existingPost);
 	}
+
 }

@@ -16,9 +16,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.http.MediaType;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,6 +35,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/posts")
@@ -42,27 +50,76 @@ public class PostController {
     @Autowired
     private CommentService commentService;
     
-    
-
-    @PostMapping
-    public ResponseEntity<?> createPost(@RequestBody Post post,HttpSession session){
+    @CrossOrigin(origins = "http://localhost:4200")
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> createPost(
+        @RequestParam("name") String name,
+        @RequestParam("content") String content,
+        @RequestParam("userId") Long userId,
+        @RequestParam("img") MultipartFile imageFile,
+        HttpSession session) {
     	 
-    	 
-        try {
-        	Long userId = post.getUser().getId();  // Assuming Post entity has a 'user' object with 'getId()'
-            
-            if (userId == null) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User ID is missing in the request");
+    	 Post post=new Post();
+        try {     	
+        	Optional<User> optionalUser = userRepository.findById(userId);
+            if (optionalUser.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User not found");
             }
 
-            // Optionally, set the user ID in the post if needed (for persistence)
-            post.setId(userId); 
+            User user = optionalUser.get();
+            
+            post.setName(name);
+           
+            post.setContent(content);
+            post.setUser(user); 
+            
+                    // 1. Save uploaded image
+                    String uploadDir = "uploads/";
+                    String randomFileName = UUID.randomUUID().toString() + "_" + imageFile.getOriginalFilename();
+                    Path path = Paths.get(uploadDir + randomFileName);
+                    Files.createDirectories(path.getParent());
+                    Files.write(path, imageFile.getBytes());
+                    post.setImg(randomFileName);
+
             Post createdPost = postService.savePost(post);
             return ResponseEntity.status(HttpStatus.CREATED).body(createdPost);
         } catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     	}
+    
+    @CrossOrigin(origins = "http://localhost:4200")
+    @PutMapping(value="/{id}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Post> updatePost(@PathVariable Long id, @RequestParam("name") String name,
+            @RequestParam("content") String content,
+            @RequestParam("img") MultipartFile imageFile ) {
+	try {
+//    	
+//    	Optional<User> optionalUser = userRepository.findById(userId);
+//    	User user = optionalUser.get();
+    	
+    	Post post=new Post();
+    	
+    	post.setName(name);
+        
+        post.setContent(content);
+       // post.setUser(user); 
+        
+	    String uploadDir = "uploads/";
+	    String randomFileName = UUID.randomUUID().toString() + "_" + imageFile.getOriginalFilename();
+	    Path path = Paths.get(uploadDir + randomFileName);
+	    Files.createDirectories(path.getParent());
+	    Files.write(path, imageFile.getBytes());
+	    post.setImg(randomFileName);
+    	
+        Post updatedPost = postService.updatePost(id, post);
+        return ResponseEntity.ok(updatedPost);
+    	}
+    	catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    	
+    }
     
 
     @GetMapping
@@ -90,6 +147,16 @@ public class PostController {
     	try {
     		postService.likePost(postId);
     		return ResponseEntity.ok(new String[]{"Post liked Succesfully."});
+    } catch(EntityNotFoundException e) {
+    	return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    }
+    }
+    
+    @GetMapping("/{postId}/view")
+    public ResponseEntity<?> viewPost(@PathVariable Long postId){
+    	try {
+    		postService.viewPost(postId);
+    		return ResponseEntity.ok(new String[]{"Post viewed Succesfully."});
     } catch(EntityNotFoundException e) {
     	return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
@@ -129,13 +196,6 @@ public class PostController {
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
-    }
-    
-    @CrossOrigin(origins = "http://localhost:4200")
-    @PutMapping("/{id}")
-    public ResponseEntity<Post> updatePost(@PathVariable Long id, @RequestBody Post post) {
-        Post updatedPost = postService.updatePost(id, post);
-        return ResponseEntity.ok(updatedPost);
     }
     
     @DeleteMapping("/{id}")

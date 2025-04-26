@@ -48,7 +48,7 @@ public class CommentServiceImpl implements CommentService {
 	}
 	
 	public List<Comment> getCommentsByPostId(Long postId){
-		return commentRepository.findByPostId(postId);
+		return commentRepository.findByPostIdByOrderByDateDesc(postId);
 	}
 	
 	@Transactional

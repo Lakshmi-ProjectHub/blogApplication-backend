@@ -11,5 +11,6 @@ import org.springframework.stereotype.Repository;
 public interface PostRepository extends JpaRepository<Post, Long> {
 	List<Post> findAllByNameContaining(String name);
 	List<Post> findByUserId(Long userId);
+	List<Post> findAllByOrderByDateDesc(); 
 }
 
