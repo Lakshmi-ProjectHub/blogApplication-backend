@@ -26,7 +26,7 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/signup")
-    @CrossOrigin(origins = "http://localhost:4200") // Allow CORS for this controller
+    @CrossOrigin(origins = "http://localhost:4200")
     public ResponseEntity<Object> signUp(@RequestBody  @Valid User user) {
         boolean isUserCreated = userService.registerUser(user);
         if (isUserCreated) {
@@ -73,7 +73,7 @@ public class UserController {
         Object userIdObj = session.getAttribute("userid");
         if (userIdObj != null) {
             Long userId = (Long) userIdObj;
-            User user = userService.getUserById(userId); // Implement this method in your service
+            User user = userService.getUserById(userId);
             return ResponseEntity.ok(user);
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No user in session");
@@ -83,7 +83,7 @@ public class UserController {
     @PostMapping("/logout")
     @CrossOrigin(origins = "http://localhost:4200")
     public ResponseEntity<Object> logout(HttpSession session) {
-        session.invalidate(); // Invalidate the session and clear all session attributes
+        session.invalidate();
         return new ResponseEntity<>(new ResponseMessage("User logged out successfully", 200), HttpStatus.OK);
     }
     

@@ -48,16 +48,6 @@ public class CommentController {
 
 		}
 	}
-
-    // 🔥 New API for Updating Comment
-//    @PutMapping("comments/update/{commentId}")
-//    public ResponseEntity<?> updateComment(@PathVariable Long commentId, @RequestBody String newContent) {
-//        try {
-//            return ResponseEntity.ok(commentService.updateComment(commentId, newContent));
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-//        }
-//    }
 	
 	
 	@PutMapping("comments/update/{commentId}")
@@ -71,16 +61,6 @@ public class CommentController {
 	}
 
 
-    // 🔥 New API for Deleting Comment
-//    @DeleteMapping("comments/delete/{commentId}")
-//    public ResponseEntity<?> deleteComment(@PathVariable Long commentId) {
-//        try {
-//            commentService.deleteCommentById(commentId);
-//            return ResponseEntity.ok("Comment deleted successfully");
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-//        }
-//    }
     @DeleteMapping("comments/delete/{commentId}")
     public ResponseEntity<?> deleteComment(@PathVariable Long commentId) {
         try {

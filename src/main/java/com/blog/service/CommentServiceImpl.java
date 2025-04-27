@@ -33,7 +33,7 @@ public class CommentServiceImpl implements CommentService {
 	public Comment createComment(Long postId, String postedBy, String content) {
 		Optional<Post> optionalPost = postRepository.findById(postId);
 		if (optionalPost.isPresent()) {
-			Long userId = Long.parseLong(postedBy); // assuming postedBy is user ID
+			Long userId = Long.parseLong(postedBy);
 		    User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
 			Comment comment = new Comment();
 			
@@ -47,14 +47,11 @@ public class CommentServiceImpl implements CommentService {
 		throw new EntityNotFoundException("Post not Found");
 	}
 	
-//	public List<Comment> getCommentsByPostId(Long postId){
-//		return commentRepository.findByPostIdByOrderByDateDesc(postId);
-//	}
 	
 	public List<Comment> getCommentsByPostId(Long postId){
 	    List<Comment> comments = commentRepository.findByPostIdByOrderByDateDesc(postId);
 	    comments.forEach(comment -> {
-	        System.out.println("Comment content: " + comment.getContent()); // Check the content
+	        System.out.println("Comment content: " + comment.getContent());
 	    });
 	    return comments;
 	}

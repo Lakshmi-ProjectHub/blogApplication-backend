@@ -27,7 +27,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
 public Post savePost(Post post) {
-    Long userId = post.getUser().getId(); // Assuming frontend sends { user: { id: 1 } }
+    Long userId = post.getUser().getId();
     User user = userRepository.findById(userId)
             .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -43,28 +43,6 @@ public Post savePost(Post post) {
     public List<Post> getAllPosts() {
         return postRepository.findAllByOrderByDateDesc();
     }
-
-//    public Post getPostById(Long postId, Long userId) {
-//        Post post = postRepository.findById(postId)
-//            .orElseThrow(() -> new EntityNotFoundException("Post not found"));
-//        User user = userRepository.findById(userId)
-//            .orElseThrow(() -> new EntityNotFoundException("User not found"));
-//
-//        Optional<PostInteraction> interactionOpt = PostInteractionRepository.findByUserAndPost(user, post);
-//
-//        if (interactionOpt.isEmpty() || !interactionOpt.get().isViewed()) {
-//            PostInteraction interaction = interactionOpt.orElse(new PostInteraction());
-//            interaction.setUser(user);
-//            interaction.setPost(post);
-//            interaction.setViewed(true);
-//            PostInteractionRepository.save(interaction);
-//
-//            post.setViewCount(post.getViewCount() + 1);
-//            postRepository.save(post);
-//        }
-//
-//        return post;
-//    }
 
     
     public Post getPostById(Long postId) {
@@ -89,29 +67,6 @@ public Post savePost(Post post) {
     }
     }
     
-//    public void likePost(Long postId, Long userId) {
-//        Post post = postRepository.findById(postId)
-//            .orElseThrow(() -> new EntityNotFoundException("Post not found"));
-//        User user = userRepository.findById(userId)
-//            .orElseThrow(() -> new EntityNotFoundException("User not found"));
-//
-//        Optional<PostInteraction> interactionOpt = interactionRepository.findByUserAndPost(user, post);
-//
-//        PostInteraction interaction = interactionOpt.orElse(new PostInteraction());
-//        interaction.setUser(user);
-//        interaction.setPost(post);
-//
-//        if (interactionOpt.isPresent() && interaction.isLiked()) {
-//            interaction.setLiked(false);
-//            post.setLikeCount(post.getLikeCount() - 1);
-//        } else {
-//            interaction.setLiked(true);
-//            post.setLikeCount(post.getLikeCount() + 1);
-//        }
-//
-//        interactionRepository.save(interaction);
-//        postRepository.save(post);
-//    }
     public void likePost(Long postId) {
     	Optional<Post> optionalPost=postRepository.findById(postId);
     if(optionalPost.isPresent())	{

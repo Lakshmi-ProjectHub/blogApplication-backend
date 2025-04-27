@@ -13,12 +13,9 @@ public interface CommentService {
 	 
 	 void deleteCommentsByPostId(Long postId);
 
-	 
-
-	    // 🔥 New methods
-	    Comment updateComment(Long commentId, String newContent);
+	 Comment updateComment(Long commentId, String newContent);
 	    
-	    void deleteCommentById(Long commentId);
+	 void deleteCommentById(Long commentId);
 	 
 	 
 }

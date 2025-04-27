@@ -14,33 +14,30 @@ public class UserService {
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    private UserRepository userRepository; // Assuming you have a UserRepository for DB interaction
+    private UserRepository userRepository;
 
-    // Register User (sign-up)
+
     public boolean registerUser(User user) {
         if (userRepository.existsByEmail(user.getEmail())) {
-            return false; // Email already exists
+            return false;
         }
         
-        // Encode the user's password before saving to DB
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
         
-        // Save user to DB
         userRepository.save(user);
         return true;
     }
 
-    // Authenticate User (sign-in)
     public User authenticateUser(String email, String rawPassword) {
         User user = userRepository.findByEmail(email);
         if (user != null && passwordEncoder.matches(rawPassword, user.getPassword())) {
         	System.out.println("User found: " + user.getEmail());
             System.out.println("Raw Password: " + rawPassword);
             System.out.println("Encoded Password in DB: " + user.getPassword());
-            return user; // Return user object if authentication is successful
+            return user;
         }
-        return null; // Return null if authentication fails
+        return null;
     }
     public User getUserById(Long id) {
         return userRepository.findById(id).orElse(null);

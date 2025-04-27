@@ -73,7 +73,7 @@ public class PostController {
             post.setContent(content);
             post.setUser(user); 
             
-                    // 1. Save uploaded image
+                  
                     String uploadDir = "uploads/";
                     String randomFileName = UUID.randomUUID().toString() + "_" + imageFile.getOriginalFilename();
                     Path path = Paths.get(uploadDir + randomFileName);
@@ -94,16 +94,12 @@ public class PostController {
             @RequestParam("content") String content,
             @RequestParam("img") MultipartFile imageFile ) {
 	try {
-//    	
-//    	Optional<User> optionalUser = userRepository.findById(userId);
-//    	User user = optionalUser.get();
-    	
+
     	Post post=new Post();
     	
     	post.setName(name);
         
-        post.setContent(content);
-       // post.setUser(user); 
+        post.setContent(content); 
         
 	    String uploadDir = "uploads/";
 	    String randomFileName = UUID.randomUUID().toString() + "_" + imageFile.getOriginalFilename();
@@ -172,26 +168,16 @@ public class PostController {
         }
     }
     
-//    @GetMapping("/user/{userId}")
-//    public ResponseEntity<?> getPostByUserId(@PathVariable Long userId) {
-//        try {
-//            Post post = postService.getPostById(userId);
-//            return ResponseEntity.ok(post);
-//        } catch (EntityNotFoundException e) {
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-//        }
-//    }
     @GetMapping("/user/{userId}")
     public ResponseEntity<?> getPostByUserId(@PathVariable Long userId) {
         try {
             List<Post> posts = postService.getPostByUserId(userId);
             
-            // If no posts are found, return an empty list
+            
             if (posts.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NO_CONTENT).body(Collections.emptyList());
             }
             
-            // Return posts as a List
             return ResponseEntity.ok(posts);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
@@ -204,15 +190,4 @@ public class PostController {
         postService.deletePostById(id);
         return ResponseEntity.ok().build();
     }
-//    @GetMapping("/create-post")
-//    @ResponseBody
-//    public String showCreatePost(HttpSession session) {
-//        Object userId = session.getAttribute("userId");
-//
-//        return "<script>" +
-//                "alert('User ID from session: " + userId + "');" +
-//               "</script>" +
-//               "<h1>Create Post Page</h1>" +
-//               "<p>If you see this, session is being read by backend.</p>";
-//    }
 }
