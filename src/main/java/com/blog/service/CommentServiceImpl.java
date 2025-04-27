@@ -47,15 +47,43 @@ public class CommentServiceImpl implements CommentService {
 		throw new EntityNotFoundException("Post not Found");
 	}
 	
-	public List<Comment> getCommentsByPostId(Long postId){
-		return commentRepository.findByPostIdByOrderByDateDesc(postId);
-	}
+//	public List<Comment> getCommentsByPostId(Long postId){
+//		return commentRepository.findByPostIdByOrderByDateDesc(postId);
+//	}
 	
+	public List<Comment> getCommentsByPostId(Long postId){
+	    List<Comment> comments = commentRepository.findByPostIdByOrderByDateDesc(postId);
+	    comments.forEach(comment -> {
+	        System.out.println("Comment content: " + comment.getContent()); // Check the content
+	    });
+	    return comments;
+	}
+
 	@Transactional
 	@Override
 	public void deleteCommentsByPostId(Long postId) {
 	    commentRepository.deleteByPostId(postId);
 	}
 	
-	
+
+    // 🔥 New Code for Update
+    @Override
+    public Comment updateComment(Long commentId, String newContent) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new EntityNotFoundException("Comment not found with id: " + commentId));
+        
+        comment.setContent(newContent);
+        return commentRepository.save(comment);
+    }
+
+    // 🔥 New Code for Delete
+    @Override
+    public void deleteCommentById(Long commentId) {
+        if (!commentRepository.existsById(commentId)) {
+            throw new EntityNotFoundException("Comment not found with id: " + commentId);
+        }
+        commentRepository.deleteById(commentId);
+    }
+
+
 }
